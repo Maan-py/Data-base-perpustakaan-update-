@@ -17,7 +17,57 @@ struct buku
 
 // membuat vektor untuk menyimpan data tanpa secara manual
 vector<buku> daftar_buku;
+set<string> id_buku_set;
 
+bool cekDuplikatFileBuku(const string &id)
+{
+    ifstream file("database_buku.txt");
+    if (file.is_open())
+    {
+        string line;
+        while (getline(file, line))
+        {
+            stringstream ss(line);
+            string ISBN;
+            getline(ss, ISBN, ',');
+            if (ISBN == id)
+            {
+                file.close();
+                return true; // Jika ID anggota ditemukan dalam file, kembalikan true
+            }
+        }
+        file.close();
+    }
+    return false; // Jika ID anggota tidak ditemukan dalam file, kembalikan false
+}
+
+// Fungsi untuk memeriksa duplikat saat input
+bool cekDuplikatInputBuku(const string &id)
+{
+    for (const auto &b : daftar_buku)
+    {
+        if (to_string(b.ISBN) == id)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool cekDuplikatBuku(const string &id)
+{
+    // Pertama, cek dalam file teks
+    if (cekDuplikatFileBuku(id))
+    {
+        return true;
+    }
+    // Jika tidak ditemukan dalam file, lanjutkan ke pemeriksaan input
+    if (cekDuplikatInputBuku(id))
+    {
+        return true;
+    }
+    return false;
+}
 
 int partition(vector<buku> &arr, int low, int high)
 {
@@ -47,7 +97,6 @@ void quickSort(vector<buku> &arr, int low, int high)
     }
 }
 
-
 void inputdata_baru(const string &file_buku)
 {
     // input data
@@ -61,8 +110,24 @@ void inputdata_baru(const string &file_buku)
         // menyimpan di variabel temp
         buku temp;
         cout << "Masukkan data buku ke-" << i + 1 << ":" << endl;
-        cout << "ISBN             : ";
-        cin >> temp.ISBN;
+        do {
+            cout << "ISBN             : ";
+            cin >> temp.ISBN;
+            // Memeriksa duplikat di file
+            if (cekDuplikatFileBuku(to_string(temp.ISBN)))
+            {
+                cout << "ID yang Anda masukkan telah ada dalam database. Silakan masukkan ID lain." << endl;
+                continue;
+            }
+            // Memeriksa duplikat pada proses input
+            if (id_buku_set.find(to_string(temp.ISBN)) != id_buku_set.end())
+            {
+                cout << "ID yang Anda masukkan telah ada dalam proses input. Silakan masukkan ID lain." << endl;
+                continue;
+            }
+            break;
+        } while (cekDuplikatBuku(to_string(temp.ISBN)));
+
         cin.ignore();
         cout << "Judul            : ";
         getline(cin, temp.judul);
@@ -100,6 +165,27 @@ void inputdata_baru(const string &file_buku)
     {
         cout << "Gagal membuka " << file_buku << " untuk penulisan." << endl;
     }
+}
+
+void validasiData(vector<buku> &data_buku)
+{
+    set<string> id_set;         // Set untuk menyimpan ID yang sudah ditampilkan
+    vector<buku> data_valid; // Vektor untuk menyimpan data yang sudah divalidasi
+    for (const auto &b : data_buku)
+    {
+        // Periksa apakah ID sudah ditampilkan sebelumnya
+        if (id_set.find(to_string(b.ISBN)) != id_set.end())
+        {
+            // Jika ID sudah ditampilkan, lewati data ini
+            continue;
+        }
+        // Tambahkan ID ke set
+        id_set.insert(to_string(b.ISBN));
+        // Tambahkan data ke vektor data yang sudah divalidasi
+        data_valid.push_back(b);
+    }
+    // Perbarui vektor data anggota dengan data yang sudah divalidasi
+    data_buku = data_valid;
 }
 
 void output_data(const string &file_buku)
