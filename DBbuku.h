@@ -15,10 +15,41 @@ struct buku
     int jumlah_eksemplar;
 };
 
+// membuat vektor untuk menyimpan data tanpa secara manual
+vector<buku> daftar_buku;
+
+
+int partition(vector<buku> &arr, int low, int high)
+{
+    int pivot = arr[high].ISBN;
+    int i = (low - 1);
+
+    for (int j = low; j <= high - 1; j++)
+    {
+        if (arr[j].ISBN < pivot)
+        {
+            i++;
+            swap(arr[i], arr[j]);
+        }
+    }
+    swap(arr[i + 1], arr[high]);
+    return (i + 1);
+}
+
+void quickSort(vector<buku> &arr, int low, int high)
+{
+    if (low < high)
+    {
+        int pi = partition(arr, low, high);
+
+        quickSort(arr, low, pi - 1);
+        quickSort(arr, pi + 1, high);
+    }
+}
+
+
 void inputdata_baru(const string &file_buku)
 {
-    // membuat vektor untuk menyimpan data tanpa secara manual
-    vector<buku> daftar_buku;
     // input data
     int stok_buku; // jumlah data
     cout << "Silahkan Masukkan jumlah buku!" << endl;
@@ -76,13 +107,9 @@ void output_data(const string &file_buku)
     ifstream file(file_buku);
     if (file.is_open())
     {
+        vector<buku> daftar_buku;
         buku temp_b;
-        int indeks = 1;
-        cout << "Isi Database Buku:\n";
-        // inisialisasi baris yang ada di file yang disimpan(database_buku.txt)
         string line;
-        // membaca setiap baris yang ada di file. tugas akan berlanjut/atau berulang selama
-        // masih ada yang tulisan pada baris file.
         while (getline(file, line))
         {
             stringstream ss(line);
@@ -93,16 +120,22 @@ void output_data(const string &file_buku)
             ss >> temp_b.tahun_terbit;
             ss.ignore();
             ss >> temp_b.jumlah_eksemplar;
-            cout << "Buku ke-" << indeks << ":" << endl;
-            cout << "ISBN             : " << temp_b.ISBN << endl;
-            cout << "Judul            : " << temp_b.judul << endl;
-            cout << "Penulis          : " << temp_b.penulis << endl;
-            cout << "Tahun terbit     : " << temp_b.tahun_terbit << endl;
-            cout << "Jumlah eksemplar : " << temp_b.jumlah_eksemplar << endl;
-            cout << endl;
-            indeks++;
+            daftar_buku.push_back(temp_b);
         }
         file.close();
+
+        quickSort(daftar_buku, 0, daftar_buku.size() - 1);
+
+        cout << "Isi Database Buku (diurutkan berdasarkan ISBN):\n";
+        for (const auto &b : daftar_buku)
+        {
+            cout << "ISBN             : " << b.ISBN << endl;
+            cout << "Judul            : " << b.judul << endl;
+            cout << "Penulis          : " << b.penulis << endl;
+            cout << "Tahun terbit     : " << b.tahun_terbit << endl;
+            cout << "Jumlah eksemplar : " << b.jumlah_eksemplar << endl;
+            cout << endl;
+        }
     }
     else
     {

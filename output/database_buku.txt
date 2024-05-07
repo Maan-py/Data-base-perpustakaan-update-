@@ -1,7 +1,9 @@
-123456,Aku Bukan Kamu,R. Aji Sukar,2023,120
-123457,kunci jawaban pertanyaan kubur,Yudha S,2023,220
-123458,Cara menjadi seseorang yang tidak berguna,Dimas Taat Sesama,2029,200
-3,Tata Titi Tutu,Hari ini gk mandi,2020,90
-1,Kasih Ibu ,Ferry Hamba Allah,2020,70
-123455,Cara melakukan cara-cara,Anwar kck,2023,60
 1,1,1,1,1
+33,3,3,3,3
+22,2,2,2,2
+2,2,2,2,2,2
+2,2,2,2,2,2
+3,3,3,3,3,3
+2,2,2,2,2,2
+3,3,3,3,3,3
+4,4,4,4,4,4
